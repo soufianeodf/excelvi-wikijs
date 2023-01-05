@@ -1,1 +1,1 @@
-# excelvi-wikijs
+# wiki
