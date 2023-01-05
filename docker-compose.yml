@@ -16,8 +16,8 @@ services:
       - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
     secrets:
       - db_password
-    logging:
-      driver: gcplogs
+#    logging:
+#      driver: gcplogs
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
