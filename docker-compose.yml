@@ -1,0 +1,100 @@
+version: "3.7"
+services:
+
+  postgres:
+    image: postgres:11-alpine
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    restart: on-failure
+    ports:
+      - "55432:5432"
+    environment:
+      - POSTGRES_DB=excelvi_wiki
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db_password
+    secrets:
+      - db_password
+    logging:
+      driver: gcplogs
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  pgadmin-compose:
+    image: dpage/pgadmin4
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    ports:
+      - "5050:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=excelvi@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    depends_on:
+      - postgres
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    networks:
+      - backend
+
+  reverse_proxy:
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    image: reverse_proxy:prod
+    container_name: reverse_proxy
+    restart: always
+    depends_on:
+      - pgadmin-compose
+      - wiki
+#    volumes:
+#      - /etc/letsencrypt:/etc/letsencrypt
+    networks:
+      - frontend
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+
+  wiki:
+    image: ghcr.io/requarks/wiki:2
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - postgres
+    environment:
+      - DB_HOST=129.151.235.140
+      - DB_TYPE=postgres
+      - DB_PORT=55432
+      - DB_USER=postgres
+      - DB_PASS_FILE=/run/secrets/db_password
+      - DB_NAME=excelvi_wiki
+    secrets:
+      - db_password
+    restart: on-failure
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  db-data:
+  pgadmin:
+
+secrets:
+  db_password:
+    external: true
