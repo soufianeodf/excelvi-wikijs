@@ -23,23 +23,24 @@ services:
     networks:
       - backend
 
-  pgadmin-compose:
-    image: dpage/pgadmin4
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-    ports:
-      - "5050:80"
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=excelvi@gmail.com
-      - PGADMIN_DEFAULT_PASSWORD=admin
-    depends_on:
-      - postgres
-    volumes:
-      - pgadmin:/var/lib/pgadmin
-    networks:
-      - backend
+# commenting out pgadmin-compose for the moment, because the server capacity is very low
+#  pgadmin-compose:
+#    image: dpage/pgadmin4
+#    deploy:
+#      replicas: 1
+#      restart_policy:
+#        condition: on-failure
+#    ports:
+#      - "5050:80"
+#    environment:
+#      - PGADMIN_DEFAULT_EMAIL=excelvi@gmail.com
+#      - PGADMIN_DEFAULT_PASSWORD=admin
+#    depends_on:
+#      - postgres
+#    volumes:
+#      - pgadmin:/var/lib/pgadmin
+#    networks:
+#      - backend
 
   reverse_proxy:
     deploy:
