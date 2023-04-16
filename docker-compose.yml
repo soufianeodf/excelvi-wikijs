@@ -51,7 +51,7 @@ services:
     container_name: reverse_proxy
     restart: always
     depends_on:
-      - pgadmin-compose
+#      - pgadmin-compose
       - wiki
 #    volumes:
 #      - /etc/letsencrypt:/etc/letsencrypt
