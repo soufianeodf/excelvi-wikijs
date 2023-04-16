@@ -94,7 +94,7 @@ networks:
 
 volumes:
   db-data:
-  pgadmin:
+#  pgadmin:
 
 secrets:
   db_password:
